@@ -1,3 +1,4 @@
+using Mirror;
 using System;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
@@ -6,7 +7,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
 {
     [RequireComponent(typeof (Rigidbody))]
     [RequireComponent(typeof (CapsuleCollider))]
-    public class RigidbodyFirstPersonController : MonoBehaviour
+    public class RigidbodyFirstPersonController : NetworkBehaviour
     {
         [Serializable]
         public class MovementSettings
@@ -118,9 +119,11 @@ namespace UnityStandardAssets.Characters.FirstPerson
         }
 
 
-        private void Start()
+        public override void OnStartLocalPlayer()
         {
             m_RigidBody = GetComponent<Rigidbody>();
+            m_RigidBody.isKinematic = false;
+
             m_Capsule = GetComponent<CapsuleCollider>();
             mouseLook.Init (transform, cam.transform);
         }
@@ -128,6 +131,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         private void Update()
         {
+            if (!isLocalPlayer) return;
+
             RotateView();
 
             if (CrossPlatformInputManager.GetButtonDown("Jump") && !m_Jump)
@@ -139,6 +144,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         private void FixedUpdate()
         {
+            if (!isLocalPlayer) return;
+
             GroundCheck();
             Vector2 input = GetInput();
 

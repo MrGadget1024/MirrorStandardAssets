@@ -1,3 +1,4 @@
+using Mirror;
 using UnityEngine;
 
 namespace UnityStandardAssets.Characters.ThirdPerson
@@ -5,8 +6,8 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 	[RequireComponent(typeof(Rigidbody))]
 	[RequireComponent(typeof(CapsuleCollider))]
 	[RequireComponent(typeof(Animator))]
-	public class ThirdPersonCharacter : MonoBehaviour
-	{
+	public class ThirdPersonCharacter : NetworkBehaviour
+    {
 		[SerializeField] float m_MovingTurnSpeed = 360;
 		[SerializeField] float m_StationaryTurnSpeed = 180;
 		[SerializeField] float m_JumpPower = 12f;
@@ -30,11 +31,14 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 		bool m_Crouching;
 
 
-		void Start()
-		{
-			m_Animator = GetComponent<Animator>();
+        public override void OnStartLocalPlayer()
+        {
+            m_Animator = GetComponent<Animator>();
+
 			m_Rigidbody = GetComponent<Rigidbody>();
-			m_Capsule = GetComponent<CapsuleCollider>();
+            m_Rigidbody.isKinematic = false;
+
+            m_Capsule = GetComponent<CapsuleCollider>();
 			m_CapsuleHeight = m_Capsule.height;
 			m_CapsuleCenter = m_Capsule.center;
 

@@ -1,10 +1,11 @@
+using Mirror;
 using System;
 using System.Collections;
 using UnityEngine;
 
 namespace UnityStandardAssets.Cameras
 {
-    public class ProtectCameraFromWallClip : MonoBehaviour
+    public class ProtectCameraFromWallClip : NetworkBehaviour
     {
         public float clipMoveTime = 0.05f;              // time taken to move when avoiding cliping (low value = fast, which it should be)
         public float returnTime = 0.4f;                 // time taken to move back towards desired position, when not clipping (typically should be a higher value than clipMoveTime)
@@ -24,7 +25,7 @@ namespace UnityStandardAssets.Cameras
         private RayHitComparer m_RayHitComparer;  // variable to compare raycast hit distances
 
 
-        private void Start()
+        public override void OnStartLocalPlayer()
         {
             // find the camera in the object hierarchy
             m_Cam = GetComponentInChildren<Camera>().transform;
@@ -39,6 +40,8 @@ namespace UnityStandardAssets.Cameras
 
         private void LateUpdate()
         {
+            if (!isLocalPlayer) return;
+
             // initially set the target distance
             float targetDist = m_OriginalDist;
 
